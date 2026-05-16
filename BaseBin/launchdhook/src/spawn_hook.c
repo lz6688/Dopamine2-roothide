@@ -4,6 +4,7 @@
 #include "crashreporter.h"
 #include "update.h"
 #include <libjailbreak/util.h>
+#include <libjailbreak/roothider.h>
 #include <substrate.h>
 #include <mach-o/dyld.h>
 #include <sys/param.h>
@@ -178,6 +179,9 @@ int __posix_spawn_hook(pid_t *restrict pid, const char *restrict path,
 			// The spawned process being xpcproxy indicates that the launchd XPC server is up
 			// All processes spawned including this one should be injected into
 			early_boot_done();
+			if (isBlacklistedSpawn(path, argv)) {
+				return posix_spawn_hook_shared(pid, path, desc, argv, envp, roothide_launchd___posix_spawn_posthook, roothide_launchd_trust_executable, platform_set_process_debugged, jbsetting(jetsamMultiplier));
+			}
 		}
 		else {
 			return __posix_spawn_orig_wrapper(pid, path, desc, argv, envp);

@@ -375,7 +375,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 	}
 #endif
 
-	bool roothideBlacklisted = isBlacklistedPath(path);
+	bool roothideBlacklisted = isBlacklistedSpawn(path, argv);
 	if (choicyBlocked)
 	{
 		int ret;

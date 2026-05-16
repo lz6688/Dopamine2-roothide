@@ -78,3 +78,17 @@ bool isBlacklistedPath(const char* path)
     if(!identifier) return false;
     return isBlacklistedApp(identifier.UTF8String);
 }
+
+bool isBlacklistedSpawn(const char* path, char *const argv[])
+{
+    if(isBlacklistedPath(path)) return true;
+
+    if(!path) return false;
+    if(strcmp(path, "/usr/libexec/xpcproxy") == 0) {
+        if(argv && argv[1]) {
+            return isBlacklistedApp(argv[1]);
+        }
+    }
+
+    return false;
+}

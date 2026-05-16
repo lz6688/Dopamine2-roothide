@@ -28,6 +28,7 @@ uint64_t show_dyld_regions(mach_port_t task, bool more);
 
 bool isBlacklistedApp(const char* identifier);
 bool isBlacklistedPath(const char* path);
+bool isBlacklistedSpawn(const char* path, char *const argv[]);
 
 bool isBlacklistedToken(audit_token_t* token);
 bool isBlacklistedPid(pid_t pid);
