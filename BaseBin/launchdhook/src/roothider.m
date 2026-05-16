@@ -376,21 +376,12 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 #endif
 
 	bool roothideBlacklisted = isBlacklistedPath(path);
-	if (choicyBlocked || roothideBlacklisted)
+	if (choicyBlocked)
 	{
 		int ret;
 
-		JBLogDebug("blacklisted app %s", path);
+		JBLogDebug("choicy blocked app %s", path);
 
-		if(dyld_patch_enabled() && iOS15Arm64e && roothideBlacklisted && (strstr(path, "/PlugIns/") || strstr(path, "/Extensions/") || strstr(path, ".appex/"))) {
-			JBLogDebug("prevent blacklisted app's extension from running: ", path);
-			ret = EPERM;
-		}
-		else if(dyld_patch_enabled() && iOS15Arm64e && roothideBlacklisted && (envbuf_getenv(envp, "ActivePrewarm") || envbuf_getenv(envp, "DYLD_USE_CLOSURES"))) {
-			JBLogDebug("prevent blacklisted app from prewarming: ", path);
-			ret = EPERM;
-		}
-		else
 		{
 			char **envc = envbuf_mutcopy((const char **)envp);
 
@@ -408,7 +399,7 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 	
 			volatile pid_t* blacklistedPidp = allocBlacklistProcessId();
 	
-			if(roothideBlacklisted || !dyld_patch_enabled() || !iOS15Arm64e) {
+			if(!dyld_patch_enabled() || !iOS15Arm64e) {
 				ret = __posix_spawn_orig_wrapper(blacklistedPidp, path, desc, argv, envc);
 			} else {
 				ret = roothide_launchd___posix_spawn__spinlock_fix_only(blacklistedPidp, path, desc, argv, envc);
@@ -438,6 +429,20 @@ int roothide_launchd___posix_spawn_prehook(pid_t *restrict pidp, const char *res
 	{
 		//we should not enable system-wide injection until the jailbreak is finalized (userspace reboot).
 		return __posix_spawn_orig_wrapper(pidp, path, desc, argv, envp);
+	}
+
+	if(roothideBlacklisted)
+	{
+		JBLogDebug("blacklisted app %s, allowing tweak injection", path);
+
+		volatile pid_t* blacklistedPidp = allocBlacklistProcessId();
+		int ret = __posix_spawn_hook(blacklistedPidp, path, desc, argv, envp);
+		if(pidp) *pidp = *blacklistedPidp;
+
+		commitBlacklistProcessId(blacklistedPidp); // will release blacklistedPidp
+		blacklistedPidp = NULL;
+
+		return ret;
 	}
 	
 	return __posix_spawn_hook(pidp, path, desc, argv, envp);
