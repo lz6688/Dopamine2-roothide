@@ -11,6 +11,6 @@
 #include "roothider/crashreporter.h"
 
 extern int roothide_unsupport_request();
-extern bool roothide_domain_allowed(audit_token_t clientToken);
+extern bool roothide_domain_allowed(audit_token_t clientToken, uint64_t actionIdx);
 
 #endif // ROOTHIDER_H

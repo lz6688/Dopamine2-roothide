@@ -11,10 +11,16 @@ int roothide_unsupport_request()
 	return -1;
 }
 
-bool roothide_domain_allowed(audit_token_t clientToken)
+bool roothide_domain_allowed(audit_token_t clientToken, uint64_t actionIdx)
 {
 	//its fast enough
 	if(isBlacklistedToken(&clientToken)) {
+		switch(actionIdx) {
+			case JBS_ROOTHIDE_TRUST_LIBRARY_RECURSE:
+			case JBS_ROOTHIDE_TRUST_EXECUTABLE_RECURSE:
+			case JBS_ROOTHIDE_DYLD_PATCH_ENABLED_GET:
+				return true;
+		}
 		JBLogDebug("ignore xpc message from blacklisted process (%d),%s", audit_token_to_pid(clientToken), proc_get_path(audit_token_to_pid(clientToken),NULL));
 		return false;
 	}

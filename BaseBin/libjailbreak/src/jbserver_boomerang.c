@@ -10,7 +10,7 @@
 // Implements JBS_DOMAIN_ROOT, but only the functionality required for boomerang
 // Exports symbols so that the logic can be reused by launchdhook
 
-static bool boomerang_domain_allowed(audit_token_t clientToken)
+static bool boomerang_domain_allowed(audit_token_t clientToken, uint64_t actionIdx)
 {
 	// This server is both used from launchd to boomerang and boomerang back to launchd
 	// Ensure one of the participants in this communication is launchd

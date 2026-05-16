@@ -490,7 +490,7 @@ static int systemwide_cs_revalidate(audit_token_t *callerToken)
 }
 
 struct jbserver_domain gSystemwideDomain = {
-	.permissionHandler = roothide_domain_allowed,
+	.permissionHandler = NULL,
 	.actions = {
 		// JBS_SYSTEMWIDE_GET_JBROOT
 		{

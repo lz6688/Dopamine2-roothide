@@ -25,12 +25,13 @@ int jbserver_received_xpc_message(struct jbserver_impl *server, xpc_object_t xms
 	audit_token_t clientToken = { 0 };
 	xpc_dictionary_get_audit_token(xmsg, &clientToken);
 
-	if (domain->permissionHandler) {
-		if (!domain->permissionHandler(clientToken)) return -2;
-	}
-
 	uint64_t actionIdx = xpc_dictionary_get_uint64(xmsg, "action");
 	if (actionIdx == 0) return -1;
+
+	if (domain->permissionHandler) {
+		if (!domain->permissionHandler(clientToken, actionIdx)) return -2;
+	}
+
 	struct jbserver_action *action = &domain->actions[0];
 	for (int i = 1; i < actionIdx && action->handler; i++) {
 		action = &domain->actions[i];

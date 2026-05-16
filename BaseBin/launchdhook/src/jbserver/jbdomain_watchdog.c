@@ -7,7 +7,7 @@
 
 #include <libjailbreak/roothider.h>
 
-static bool watchdog_domain_allowed(audit_token_t clientToken)
+static bool watchdog_domain_allowed(audit_token_t clientToken, uint64_t actionIdx)
 {
 	xpc_object_t entitlementValue = xpc_copy_entitlement_for_token("com.apple.private.iowatchdog.user-access", &clientToken);
 	if (entitlementValue && xpc_get_type(entitlementValue) == XPC_TYPE_BOOL) {

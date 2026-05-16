@@ -6,7 +6,7 @@
 
 extern void systemwide_domain_set_enabled(bool enabled);
 
-static bool platform_domain_allowed(audit_token_t clientToken)
+static bool platform_domain_allowed(audit_token_t clientToken, uint64_t actionIdx)
 {
 	pid_t pid = audit_token_to_pid(clientToken);
 	uint32_t csflags = 0;

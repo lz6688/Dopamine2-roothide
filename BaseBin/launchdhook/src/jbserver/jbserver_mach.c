@@ -10,8 +10,6 @@ int systemwide_process_checkin(audit_token_t *processToken, char **rootPathOut, 
 int systemwide_fork_fix(audit_token_t *parentToken, uint64_t childPid);
 int systemwide_trust_file(audit_token_t *processToken, int rfd, struct siginfo *siginfo, size_t siginfoSize);
 
-bool systemwide_domain_allowed(audit_token_t clientToken);
-
 int jbserver_send_mach_reply(mach_msg_header_t *hdr, void *replyData)
 {
 	kern_return_t kr = -1;
@@ -48,10 +46,6 @@ int jbserver_received_mach_message(audit_token_t *auditToken, struct jbserver_ma
 	JBLogDebug("jbserver received mach message(%d) from (%d) %s", jbsMachMsg->action, audit_token_to_pid(*auditToken), proc_get_path(audit_token_to_pid(*auditToken),NULL));
 
 	int r = -1;
-
-	// Anything implemented by the mach server is provided systemwide
-	// So we also need to honor the allowed handler of the systemwide domain
-	if (!roothide_domain_allowed(*auditToken)) return -1;
 
 	uint64_t msgSize = jbsMachMsg->hdr.msgh_size;
 	void *replyData = NULL;

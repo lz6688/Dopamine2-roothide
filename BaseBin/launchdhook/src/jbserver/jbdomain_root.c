@@ -6,7 +6,7 @@
 #include <libjailbreak/primitives.h>
 #include <libjailbreak/roothider.h>
 
-static bool root_domain_allowed(audit_token_t clientToken)
+static bool root_domain_allowed(audit_token_t clientToken, uint64_t actionIdx)
 {
 	return (audit_token_to_euid(clientToken) == 0);
 }
